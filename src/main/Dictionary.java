@@ -16,10 +16,12 @@ import java.util.regex.Pattern;
 
 public class Dictionary {
 
-	private static final String DEFAULT_RUTE = "resources/spanish.txt";
+	private static final String DEFAULT_DICTIONARY_RUTE = "resources/spanish/dictionary.txt";
 	private static final int DEFAULT_NUMLETTERS = 5;
 
 	private Random rand = new Random();
+	private WordEvaluator evaluator = new WordEvaluator();
+	private static final int NUM_EVAL_SEARCHES = 100; // number of searches before lowering the eval value
 
 	private Map<Integer, String> words;
 	private int numLetters;
@@ -27,11 +29,11 @@ public class Dictionary {
 
 	/*------------------------------------*/
 	public Dictionary() {
-		this(DEFAULT_RUTE, DEFAULT_NUMLETTERS);
+		this(DEFAULT_DICTIONARY_RUTE, DEFAULT_NUMLETTERS);
 	}
 
 	public Dictionary(int numLetters) {
-		this(DEFAULT_RUTE, numLetters);
+		this(DEFAULT_DICTIONARY_RUTE, numLetters);
 	}
 
 	public Dictionary(String rute) {
@@ -71,7 +73,7 @@ public class Dictionary {
 				if (word.length() == numLetters) {
 
 					// Check if it doesn't have accents
-					if (!Pattern.matches(".*[αινσϊ].*", word)) {
+					if (!Pattern.matches(".*[αινσϊό].*", word)) {
 						words.put(index, word);
 						index++;
 					}
@@ -91,8 +93,10 @@ public class Dictionary {
 	 */
 	public String getNewWord() {
 
-		// We will use an aux to avoid choosing a position we already removed
+		// We will use an auxiliary list to avoid choosing a position we already removed
 		LinkedList<Integer> aux = new LinkedList<>(words.keySet());
+		
+		System.out.println("Current set size: "+aux.size());
 
 		int pos = rand.nextInt(aux.size());
 		
@@ -101,10 +105,26 @@ public class Dictionary {
 		
 		pos = (pos + random) % aux.size();
 		String word = words.get(aux.get(pos));
+		
+		// Now its time to evaluate how good the word is
+		int wordEval = evaluator.eval(word); // value of the first word
+		int desiredEval = 10; // desired initial value, will be lowered if nothing is found
+		int evaluations = 1; // evaluations done with current desiredEval value
+		while(wordEval < desiredEval) {
+			if(evaluations == NUM_EVAL_SEARCHES) {
+				evaluations = 0;
+				desiredEval--;
+			}
+			
+			pos = (pos + 1) % aux.size();
+			word = words.get(aux.get(pos));
+			wordEval = evaluator.eval(word);
+			evaluations++;
+		}
 
 		return word;
 	}
-
+	
 	/*
 	 * Removes from the words those who have the char c in pos (or in any pos if it
 	 * is not in another one yet).
@@ -195,7 +215,7 @@ public class Dictionary {
 
 	public static void main(String[] args) {
 
-		Dictionary dict = new Dictionary("resources/spanish.txt", 5);
+		Dictionary dict = new Dictionary(DEFAULT_DICTIONARY_RUTE, 5);
 		dict.test();
 
 	}

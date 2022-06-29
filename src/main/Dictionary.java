@@ -15,6 +15,8 @@ import java.util.Set;
 import java.util.regex.Pattern;
 
 public class Dictionary {
+	
+	private Controller myController;
 
 	private static final String DEFAULT_DICTIONARY_RUTE = "resources/spanish/dictionary.txt";
 	private static final int DEFAULT_NUMLETTERS = 5;
@@ -28,19 +30,20 @@ public class Dictionary {
 	private char[] guessedWord;
 
 	/*------------------------------------*/
-	public Dictionary() {
-		this(DEFAULT_DICTIONARY_RUTE, DEFAULT_NUMLETTERS);
+	public Dictionary(Controller c) {
+		this(c, DEFAULT_DICTIONARY_RUTE, DEFAULT_NUMLETTERS);
 	}
 
-	public Dictionary(int numLetters) {
-		this(DEFAULT_DICTIONARY_RUTE, numLetters);
+	public Dictionary(Controller c, int numLetters) {
+		this(c, DEFAULT_DICTIONARY_RUTE, numLetters);
 	}
 
-	public Dictionary(String rute) {
-		this(rute, DEFAULT_NUMLETTERS);
+	public Dictionary(Controller c, String rute) {
+		this(c, rute, DEFAULT_NUMLETTERS);
 	}
 
-	public Dictionary(String rute, int numLetters) {
+	public Dictionary(Controller c, String rute, int numLetters) {
+		myController = c;
 		this.numLetters = numLetters;
 
 		words = readFile(rute, numLetters);
@@ -72,8 +75,8 @@ public class Dictionary {
 				// Check if it has the right number of letters
 				if (word.length() == numLetters) {
 
-					// Check if it doesn't have accents
-					if (!Pattern.matches(".*[αινσϊό].*", word)) {
+					// Check if it doesn't have accents or a space
+					if (!Pattern.matches(".*[αινσϊό ].*", word)) {
 						words.put(index, word);
 						index++;
 					}
@@ -95,36 +98,42 @@ public class Dictionary {
 
 		// We will use an auxiliary list to avoid choosing a position we already removed
 		LinkedList<Integer> aux = new LinkedList<>(words.keySet());
-		
-		System.out.println("Current set size: "+aux.size());
 
-		int pos = rand.nextInt(aux.size());
-		
-		// We will jump max in a value between 1-10 to add some randomness
-		int random = aux.size() < 10 ? 1 : (rand.nextInt(10) + 1);
-		
-		pos = (pos + random) % aux.size();
-		String word = words.get(aux.get(pos));
-		
-		// Now its time to evaluate how good the word is
-		int wordEval = evaluator.eval(word); // value of the first word
-		int desiredEval = 10; // desired initial value, will be lowered if nothing is found
-		int evaluations = 1; // evaluations done with current desiredEval value
-		while(wordEval < desiredEval) {
-			if(evaluations == NUM_EVAL_SEARCHES) {
-				evaluations = 0;
-				desiredEval--;
+		System.out.println("Current set size: " + aux.size());
+
+		try {
+			int pos = rand.nextInt(aux.size());
+
+			// We will jump max in a value between 1-10 to add some randomness
+			int random = aux.size() < 10 ? 1 : (rand.nextInt(10) + 1);
+
+			pos = (pos + random) % aux.size();
+			String word = words.get(aux.get(pos));
+
+			// Now its time to evaluate how good the word is
+			int wordEval = evaluator.eval(word); // value of the first word
+			int desiredEval = 10; // desired initial value, will be lowered if nothing is found
+			int evaluations = 1; // evaluations done with current desiredEval value
+			while (wordEval < desiredEval) {
+				if (evaluations == NUM_EVAL_SEARCHES) {
+					evaluations = 0;
+					desiredEval--;
+				}
+
+				pos = (pos + 1) % aux.size();
+				word = words.get(aux.get(pos));
+				wordEval = evaluator.eval(word);
+				evaluations++;
 			}
-			
-			pos = (pos + 1) % aux.size();
-			word = words.get(aux.get(pos));
-			wordEval = evaluator.eval(word);
-			evaluations++;
-		}
 
-		return word;
+			return word;
+		} catch (IllegalArgumentException e) {
+			myController.emptyWords();
+			e.printStackTrace();
+		}
+		return null;
 	}
-	
+
 	/*
 	 * Removes from the words those who have the char c in pos (or in any pos if it
 	 * is not in another one yet).
@@ -197,6 +206,21 @@ public class Dictionary {
 	}
 
 	/*
+	 * Removes the specified word from the map
+	 */
+	public void removeWord(String word) {
+		Set<Integer> auxSet = new HashSet<>(words.keySet());
+		for (int i : auxSet) {
+			if (words.get(i).equals(word)) {
+				words.remove(i);
+				System.out.println("Word \"" + word + "\" correctly removed from set.");
+				return;
+			}
+		}
+		System.err.println("Cannot remove the word \"" + word + "\": Not found in set.");
+	}
+
+	/*
 	 * Creates a test.txt file with all the words that will be stored in the set.
 	 */
 	private void test() {
@@ -215,7 +239,7 @@ public class Dictionary {
 
 	public static void main(String[] args) {
 
-		Dictionary dict = new Dictionary(DEFAULT_DICTIONARY_RUTE, 5);
+		Dictionary dict = new Dictionary(null, DEFAULT_DICTIONARY_RUTE, 5);
 		dict.test();
 
 	}

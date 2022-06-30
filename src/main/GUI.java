@@ -4,6 +4,8 @@ import java.awt.EventQueue;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+
+import control.Version;
 import main.Letter.STATUS;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
@@ -21,6 +23,9 @@ import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 
 public class GUI {
+	
+	public static final String programName = "WordleSolver";
+	public static final String downloadURL = "https://github.com/pjmeca/WordleSolver";
 
 	private Controller c;
 
@@ -40,7 +45,12 @@ public class GUI {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					newGame();
+					GUI window = newGame();
+					
+					// New version prompt
+					if (Version.isNewVersionAvailable())
+						window.showDialog("New Update!", "A new version of " + programName + " is available!\n"
+								+ "Would you like to download it now?", JOptionPane.YES_NO_OPTION, downloadURL);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -51,10 +61,12 @@ public class GUI {
 	/*
 	 * Starts a new game.
 	 */
-	private static void newGame() {
+	private static GUI newGame() {
 		GUI window = new GUI();
 		window.frame.setVisible(true);
 		window.nextWord();
+		
+		return window;
 	}
 
 	/**
@@ -69,19 +81,18 @@ public class GUI {
 	 * Initialize the contents of the frame.
 	 */
 	private void initialize() {
-		frame = new JFrame("WordleSolver");
+		frame = new JFrame(programName);
 		frame.setBounds(100, 100, 450, 450);
 		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		frame.setMinimumSize(new Dimension(300, 300));
 
+		// Menu
 		JMenuBar menuBar = new JMenuBar();
 		frame.setJMenuBar(menuBar);
-
-		JMenu mnNew = new JMenu("New");
-		menuBar.add(mnNew);
-
+		JMenu mnHelp = new JMenu("Help");
+		menuBar.add(mnHelp);
 		JMenuItem mntmNewGame = new JMenuItem("New Game");
-		mnNew.add(mntmNewGame);
+		mnHelp.add(mntmNewGame);
 		mntmNewGame.addActionListener(new ActionListener() {
 
 			@Override
@@ -90,6 +101,15 @@ public class GUI {
 			}
 
 		});
+		JMenuItem mntmCheckUpdates = new JMenuItem("Check for Updates");
+		mntmCheckUpdates.addActionListener(e -> {
+			if (Version.isNewVersionAvailable())
+				showDialog("New Update!", "A new version of " + programName + " is available!\n"
+						+ "Would you like to download it now?", JOptionPane.YES_NO_OPTION, downloadURL);
+			else
+				showDialog("No Updates", "There are no updates available.\nCurrent version: "+Version.getCurrentVersion(), JOptionPane.INFORMATION_MESSAGE);
+		});
+		mnHelp.add(mntmCheckUpdates);
 
 		JPanel buttonsPanel = new JPanel();
 		buttonsPanel.setLayout(new GridLayout(6, 5, 0, 0));
@@ -244,6 +264,24 @@ public class GUI {
 	public void emptyWords() {
 		JOptionPane.showMessageDialog(frame, "Oooops! It seems that there are no more possible words :(",
 				"No more words", JOptionPane.ERROR_MESSAGE);
+	}
+	
+	
+	/*
+	 *  Code reused from AnyFind for updates
+	 */
+	public void showDialog(String title, String message, int messageType, String... url) {
+		if (url.length > 0) {
+			int selectedOption = JOptionPane.showConfirmDialog(null, message, title, messageType);
+			if (selectedOption == JOptionPane.YES_OPTION) {
+				try {
+					java.awt.Desktop.getDesktop().browse(new java.net.URI(url[0]));
+				} catch (Exception e) {
+					showDialog("Error", "Cannot open the specified website!\nPlease, try again later or check for program updates if the error persists.", JOptionPane.ERROR_MESSAGE);
+				}
+			}
+		} else
+			JOptionPane.showMessageDialog(frame, message, title, messageType);
 	}
 
 }

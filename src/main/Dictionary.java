@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.text.Normalizer;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -74,9 +75,13 @@ public class Dictionary {
 
 				// Check if it has the right number of letters
 				if (word.length() == numLetters) {
+					
+					// If it has an accent mark, remove it and add the word
+					word = word.toLowerCase();
+					word = stripAccents(word);
 
-					// Check if it doesn't have accents or a space
-					if (!Pattern.matches(".*[αινσϊό ].*", word)) {
+					// Don't add words with ό or " "
+					if (!Pattern.matches(".*[ό ].*", word)) {
 						words.put(index, word);
 						index++;
 					}
@@ -90,6 +95,25 @@ public class Dictionary {
 
 		return words;
 	}
+	
+	/*
+	 * https://es.stackoverflow.com/questions/337807/c%C3%B3mo-quitar-acentos-y-caracteres-especiales-en-java
+	 */
+	private static String stripAccents(String s) 
+	{
+	    /* Keep ρ and ό */
+	    s = s.replace('ρ', '\001');
+	    s = s.replace('ό', '\002');
+	    
+	    s = Normalizer.normalize(s, Normalizer.Form.NFD);
+	    s = s.replaceAll("[\\p{InCombiningDiacriticalMarks}]", "");
+	    
+	    /* Return special characters */
+	    s = s.replace('\001', 'ρ');
+	    s = s.replace('\002', 'ό');
+
+	    return s;
+	}  
 
 	/*
 	 * Returns a random word from current words.

@@ -85,6 +85,7 @@ public class GUI {
 		frame.setBounds(100, 100, 450, 450);
 		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		frame.setMinimumSize(new Dimension(300, 300));
+		frame.setLocationRelativeTo(null);
 
 		// Menu
 		JMenuBar menuBar = new JMenuBar();
@@ -110,6 +111,12 @@ public class GUI {
 				showDialog("No Updates", "There are no updates available.\nCurrent version: "+Version.getCurrentVersion(), JOptionPane.INFORMATION_MESSAGE);
 		});
 		mnHelp.add(mntmCheckUpdates);
+		JMenuItem mntmAbout = new JMenuItem("About");
+		mntmAbout.addActionListener((e) -> {
+			showDialog("About", programName+" "+Version.getCurrentVersion()+
+			"\nDeveloped by Pablo Meca", JOptionPane.INFORMATION_MESSAGE);
+		});
+		mnHelp.add(mntmAbout);
 
 		JPanel buttonsPanel = new JPanel();
 		buttonsPanel.setLayout(new GridLayout(6, 5, 0, 0));

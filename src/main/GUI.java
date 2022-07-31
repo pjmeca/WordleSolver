@@ -4,6 +4,7 @@ import java.awt.EventQueue;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JTextField;
 
 import control.Version;
 import main.Letter.STATUS;
@@ -85,8 +86,12 @@ public class GUI {
 		frame = new JFrame(programName);
 		frame.setBounds(100, 100, 450, 450);
 		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		frame.setMinimumSize(new Dimension(300, 300));
+		frame.setMinimumSize(new Dimension(320, 320));
 		frame.setLocationRelativeTo(null);
+
+		JTextField txtDefaultPrompt = new JTextField(); // auxiliary textfield for hiding the default prompt
+		txtDefaultPrompt.setBounds(0, 0, 0, 0);
+		frame.getContentPane().add(txtDefaultPrompt);
 
 		// Icon
 		ImageIcon icon = new ImageIcon(LOGO_PATH);
@@ -95,10 +100,10 @@ public class GUI {
 		// Menu
 		JMenuBar menuBar = new JMenuBar();
 		frame.setJMenuBar(menuBar);
-		JMenu mnHelp = new JMenu("Help");
-		menuBar.add(mnHelp);
-		JMenuItem mntmNewGame = new JMenuItem("New Game");
-		mnHelp.add(mntmNewGame);
+		JMenu mnNew = new JMenu("New");
+		menuBar.add(mnNew);
+		JMenuItem mntmNewGame = new JMenuItem("Game");
+		mnNew.add(mntmNewGame);
 		mntmNewGame.addActionListener(new ActionListener() {
 
 			@Override
@@ -107,6 +112,8 @@ public class GUI {
 			}
 
 		});
+		JMenu mnHelp = new JMenu("Help");
+		menuBar.add(mnHelp);
 		JMenuItem mntmCheckUpdates = new JMenuItem("Check for Updates");
 		mntmCheckUpdates.addActionListener(e -> {
 			if (Version.isNewVersionAvailable())

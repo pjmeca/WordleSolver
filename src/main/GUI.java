@@ -26,6 +26,7 @@ public class GUI {
 	
 	public static final String programName = "WordleSolver";
 	public static final String downloadURL = "https://github.com/pjmeca/WordleSolver";
+	public static final String LOGO_PATH = "resources/images/icon/icon.png";
 
 	private Controller c;
 
@@ -86,6 +87,10 @@ public class GUI {
 		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		frame.setMinimumSize(new Dimension(300, 300));
 		frame.setLocationRelativeTo(null);
+
+		// Icon
+		ImageIcon icon = new ImageIcon(LOGO_PATH);
+		frame.setIconImage(icon.getImage());
 
 		// Menu
 		JMenuBar menuBar = new JMenuBar();

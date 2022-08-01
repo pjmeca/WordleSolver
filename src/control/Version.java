@@ -28,6 +28,7 @@ public class Version {
 		String content;
 		try {
 			Scanner s = new Scanner(new File(urlCurrVersion));
+			//Scanner s = new Scanner(new File(Version.class.getClassLoader().getResource(urlCurrVersion).toURI()));
 			content = s.useDelimiter("\\Z").next();
 			s.close();
 			return content; 

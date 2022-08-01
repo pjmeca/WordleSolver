@@ -19,7 +19,7 @@ public class Dictionary {
 	
 	private Controller myController;
 
-	private static final String DEFAULT_DICTIONARY_RUTE = "resources/spanish/dictionary.txt";
+	private static final String DEFAULT_DICTIONARY_RUTE = "resources/lang/spanish/dictionary.txt";
 	private static final int DEFAULT_NUMLETTERS = 5;
 
 	private Random rand = new Random();
@@ -66,6 +66,7 @@ public class Dictionary {
 		// Read all the words from the file
 		try {
 			File f = new File(rute);
+			//File f = Paths.get(getClass().getClassLoader().getResource(rute).toURI()).toFile();
 			Scanner scan = new Scanner(f, "UTF-8");
 			int index = 0;
 
@@ -80,8 +81,8 @@ public class Dictionary {
 					word = word.toLowerCase();
 					word = stripAccents(word);
 
-					// Don't add words with ü or " "
-					if (!Pattern.matches(".*[ü ].*", word)) {
+					// Don't add words with ï¿½ or " "
+					if (!Pattern.matches(".*[ï¿½ ].*", word)) {
 						words.put(index, word);
 						index++;
 					}
@@ -101,16 +102,16 @@ public class Dictionary {
 	 */
 	private static String stripAccents(String s) 
 	{
-	    /* Keep ñ and ü */
-	    s = s.replace('ñ', '\001');
-	    s = s.replace('ü', '\002');
+	    /* Keep ï¿½ and ï¿½ */
+	    s = s.replace('ï¿½', '\001');
+	    s = s.replace('ï¿½', '\002');
 	    
 	    s = Normalizer.normalize(s, Normalizer.Form.NFD);
 	    s = s.replaceAll("[\\p{InCombiningDiacriticalMarks}]", "");
 	    
 	    /* Return special characters */
-	    s = s.replace('\001', 'ñ');
-	    s = s.replace('\002', 'ü');
+	    s = s.replace('\001', 'ï¿½');
+	    s = s.replace('\002', 'ï¿½');
 
 	    return s;
 	}  

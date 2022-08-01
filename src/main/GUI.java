@@ -5,7 +5,6 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
-
 import control.Version;
 import main.Letter.STATUS;
 import java.awt.BorderLayout;
@@ -28,6 +27,7 @@ public class GUI {
 	public static final String programName = "WordleSolver";
 	public static final String downloadURL = "https://github.com/pjmeca/WordleSolver";
 	public static final String LOGO_PATH = "resources/images/icon/icon.png";
+	public static final String CELEBRATION_PATH = "resources/images/celebration_emoji.png";
 
 	private Controller c;
 
@@ -95,6 +95,7 @@ public class GUI {
 
 		// Icon
 		ImageIcon icon = new ImageIcon(LOGO_PATH);
+		//ImageIcon icon = new ImageIcon(getClass().getClassLoader().getResource(LOGO_PATH));
 		frame.setIconImage(icon.getImage());
 
 		// Menu
@@ -237,6 +238,7 @@ public class GUI {
 			Image img;
 			try {
 				img = ImageIO.read(new File("resources/images/celebration_emoji.png"));
+				//img = ImageIO.read(getClass().getClassLoader().getResource(CELEBRATION_PATH));
 				img = img.getScaledInstance(30, 30, Image.SCALE_DEFAULT);
 
 				Object[] options = { "Let's go!", "Maybe later" };
@@ -267,7 +269,7 @@ public class GUI {
 	 */
 	private void notFound() {
 
-		if (currentWord.isBlank())
+		if (isBlank(currentWord))
 			return;
 
 		c.notFound(currentWord);
@@ -275,6 +277,19 @@ public class GUI {
 		currentWord = c.getNewWord();
 		// Set buttons to new word
 		setWord(currentWord);
+	}
+	
+	private boolean isBlank(final CharSequence cs) {
+	    int strLen;
+	    if (cs == null || (strLen = cs.length()) == 0) {
+	        return true;
+	    }
+	    for (int i = 0; i < strLen; i++) {
+	        if (!Character.isWhitespace(cs.charAt(i))) {
+	            return false;
+	        }
+	    }
+	    return true;
 	}
 
 	/*

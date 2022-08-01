@@ -127,7 +127,7 @@ public class GUI {
 		JMenuItem mntmAbout = new JMenuItem("About");
 		mntmAbout.addActionListener((e) -> {
 			showDialog("About", programName+" "+Version.getCurrentVersion()+
-			"\nDeveloped by Pablo Meca", JOptionPane.INFORMATION_MESSAGE);
+			"\nDeveloped by Pablo Meca\n\nBased on \"Wordle\" by Josh Wardle", JOptionPane.INFORMATION_MESSAGE);
 		});
 		mnHelp.add(mntmAbout);
 
@@ -260,6 +260,11 @@ public class GUI {
 
 		// Get a new word
 		currentWord = c.getNewWord();
+		
+		// No more words
+		if(currentWord == null)
+			return;
+		
 		// Set buttons to new word
 		setWord(currentWord);
 	}
@@ -275,6 +280,11 @@ public class GUI {
 		c.notFound(currentWord);
 		// Get a new word
 		currentWord = c.getNewWord();
+		
+		// No more words
+		if(currentWord == null)
+			return;
+			
 		// Set buttons to new word
 		setWord(currentWord);
 	}

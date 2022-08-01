@@ -83,8 +83,11 @@ public class Dictionary {
 
 					// Don't add words with � or " "
 					if (!Pattern.matches(".*[� ].*", word)) {
-						words.put(index, word);
-						index++;
+						// Check if the word has already been added (because we are doing toLowerCase)
+						if(!words.containsValue(word)) {
+							words.put(index, word);
+							index++;
+						}
 					}
 				}
 			}
@@ -154,7 +157,7 @@ public class Dictionary {
 			return word;
 		} catch (IllegalArgumentException e) {
 			myController.emptyWords();
-			e.printStackTrace();
+			//e.printStackTrace();
 		}
 		return null;
 	}
